@@ -1,0 +1,109 @@
+%% Hreflex_fastplot
+iniPath = uigetdir('%USERPROFILE%/Escritorio/');
+f = waitbar(0,'Cargando archivos...');
+%% Frecuencias en miembros superiores: 0.2, 0.3 y 1 Hz
+%% MSI
+% Curva I/O
+PathName = [iniPath,'/SUP-IZQ/CURVA/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SI.curva.corriente, s.SI.curva.M,s.SI.curva.H,s.SI.curva.latM,s.SI.curva.latH] = curvaHreflex(FileName,PathName,300);
+end
+waitbar(0.05,f);
+
+% DDF 0.2 Hz
+PathName = [iniPath,'/SUP-IZQ/0.2HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SI.F200mHz.corriente, s.SI.F200mHz.M,s.SI.F200mHz.H,s.SI.F200mHz.latM,s.SI.F200mHz.latH] = ddfHreflex(FileName,PathName,300);
+end
+waitbar(0.10,f);
+
+% DDF 0.3 Hz
+PathName = [iniPath,'/SUP-IZQ/0.3HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SI.F300mHz.corriente, s.SI.F300mHz.M,s.SI.F300mHz.H,s.SI.F300mHz.latM,s.SI.F300mHz.latH] = ddfHreflex(FileName,PathName,300);
+end
+waitbar(0.15,f);
+
+% DDF 1 Hz
+PathName = [iniPath,'/SUP-IZQ/1HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SI.F1Hz.corriente, s.SI.F1Hz.M,s.SI.F1Hz.H,s.SI.F1Hz.latM,s.SI.F1Hz.latH] = ddfHreflex(FileName,PathName,300);      
+end
+waitbar(0.20,f);
+ 
+%% %% Promedio de los trenes
+% MSI
+A = s.SI.F200mHz.H;
+B = s.SI.F300mHz.H;
+C = s.SI.F1Hz.H;
+aa = [A(1,:);A(3,:)];
+is2 = mean(A);
+is3 = mean(B);
+is5 = mean(C);
+%% Normalización y arrays con medianas
+% MSI
+is2norm = is2/is2(1);
+is3norm = is3/is3(1);
+is5norm = is5/is5(1);
+mis2 = median(is2norm(2:10));
+mis3 = median(is3norm(2:10));
+mis5 = median(is5norm(2:10));
+MSI = [mis2 mis3 mis5];
+
+%% R0s
+[mr0] = R0sMSI(A,B,C);  
+MSI = [mr0 mis2 mis3 mis5]
+%% Grafica resultados
+h = figure;
+
+plot(1:10,is2norm,'-oc',1:10,is3norm,'-om',1:10,is5norm,'-or');
+hold on;
+yline(mis2,'--c');
+yline(mis3,'--m');
+yline(mis5,'--r');
+
+legend({'0.2 Hz','0.3 Hz','1 Hz'});
+title('Miembro superior izquierdo');
+xlabel('N.° pulso');
+ylabel('ABC del RH normalizado');
+axis([0.5 10.5 0 1.6]);
+
+maxFigure(h);
+h.Children(1).Position = [0.4869 0.4656 0.0561 0.0928];
+close(f);
+
+%% Gráfica de %DDF
+j = figure;
+
+%MSI
+mpr0 = (1-mr0)*100;
+mpis2 = (1-mis2)*100;
+mpis3 = (1-mis3)*100;
+mpis5 = (1-mis5)*100;
+% Ajuste
+X = transpose([0.1,0.2,0.3,1]);
+Y = transpose([mpr0,mpis2,mpis3,mpis5]);
+[ft,gof] = fit(X,Y,'logistic4')
+% Plot
+scatter(0.1,mpr0,100,'k','filled')
+hold on
+scatter(0.2,mpis2,100,"c","filled")
+scatter(0.3,mpis3,100,"m","filled")
+scatter(1,mpis5,100,"r","filled")
+ajuste = plot(ft,X,Y)
+set(ajuste,'LineWidth',1.5)
+
+xlabel('Frecuencia de estimulación');
+ylabel('% DDF del RH');
+legend({'0.1 Hz','0.2 Hz','0.3 Hz','1 Hz'});
+title('Porcentaje de depresión en miembro superior izquierdo');
+set(gca,'FontSize',15,'FontName','Courier')
+axis([0.1 1 -20 100]);
