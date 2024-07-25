@@ -1,3 +1,6 @@
+% Con este código obtenemos dos arrays MSD y MSI con las medianas del ABC del RH en cada frecuencia (0.1, 0.2, 0.3 y 1 Hz) para miembro superior derecho e izquierdo
+% También obtenemos dos gráficas. La primera ABC del RH contra número de pulso (para ambos miembros) y la segunda, %DDF del RH contra frecuencia de estimulación con un ajuste sigmoide (para ambos miembros) 
+
 %% Hreflex_fastplot
 iniPath = uigetdir('%USERPROFILE%/Escritorio/');
 f = waitbar(0,'Cargando archivos...');
@@ -112,6 +115,11 @@ MSD = [mds2 mds3 mds5]
 
 %% R0s
 [mr0i,mr0d] = R0s(A,B,C,D,E,F) 
+
+%% Vectores con medianas
+MSD = [mr0d mds2 mds3 mds5]
+MSI = [mr0i mis2 mis3 mis5]
+
 %% Grafica resultados
 h = figure;
 subplot(2,1,1);
