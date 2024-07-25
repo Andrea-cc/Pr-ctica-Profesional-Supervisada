@@ -1,0 +1,12 @@
+% Obtenemos la mediana del ABC del RH en 0.1 Hz para miembro superior derecho
+
+function [mr0] = R0sMSD(D,E,F) 
+% MSD
+    d = D(:,1);
+    e = E(:,1);
+    ff = F(:,1);
+    R0SD = [d;e;ff];
+    m = median(R0SD);
+    R0SDn = R0SD./m;
+    mr0 = median(R0SDn(2:9));
+end
