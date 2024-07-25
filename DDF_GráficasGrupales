@@ -1,0 +1,306 @@
+% Correr primero DDF_matrices_grupales para cargar los datos
+
+%% Gráfica grupal MSD
+
+Ad; %diabetes
+Ahd; %hijos diabetes
+Apd; %prediabetes
+Ac; %control
+
+kd = figure;
+
+%Transpuestas Diabetes
+ f0d = transpose(Ad(:,1));
+ f1d = transpose(Ad(:,2));
+ f2d = transpose(Ad(:,3));
+ f3d = transpose(Ad(:,4));
+%Transpuestas Hijos diabetes
+ f0hd = transpose(Ahd(:,1));
+ f1hd = transpose(Ahd(:,2));
+ f2hd = transpose(Ahd(:,3));
+ f3hd = transpose(Ahd(:,4));
+%Transpuestas Prediabetes
+ f0pd = transpose(Apd(:,1));
+ f1pd = transpose(Apd(:,2));
+ f2pd = transpose(Apd(:,3));
+ f3pd = transpose(Apd(:,4));
+%Transpuestas Control
+ f0c = transpose(Ac(:,1));
+ f1c = transpose(Ac(:,2));
+ f2c = transpose(Ac(:,3));
+ f3c = transpose(Ac(:,4));
+% 
+% %Medianas porcentuales agrupadas por frecuencia
+%Diabetes
+ f0pD = (1-f0d)*100;
+ f1pD = (1-f1d)*100;
+ f2pD = (1-f2d)*100;
+ f3pD = (1-f3d)*100;
+%Hijos diabetes
+ f0pHD = (1-f0hd)*100;
+ f1pHD = (1-f1hd)*100;
+ f2pHD = (1-f2hd)*100;
+ f3pHD = (1-f3hd)*100;
+%Prediabetes
+ f0pPD = (1-f0pd)*100;
+ f1pPD = (1-f1pd)*100;
+ f2pPD = (1-f2pd)*100;
+ f3pPD = (1-f3pd)*100;
+%Control
+ f0pC = (1-f0c)*100;
+ f1pC = (1-f1c)*100;
+ f2pC = (1-f2c)*100;
+ f3pC = (1-f3c)*100;
+% 
+% %Promedio de medianas porcentuales
+%Diabetes
+ af0pD = mean(f0pD);
+ af1pD = mean(f1pD);
+ af2pD = mean(f2pD);
+ af3pD = mean(f3pD);
+%Hijos diabetes
+ af0pHD = mean(f0pHD);
+ af1pHD = mean(f1pHD);
+ af2pHD = mean(f2pHD);
+ af3pHD = mean(f3pHD);
+%Prediabetes
+ af0pPD = mean(f0pPD);
+ af1pPD = mean(f1pPD);
+ af2pPD = mean(f2pPD);
+ af3pPD = mean(f3pPD);
+%Control
+ af0pC = mean(f0pC);
+ af1pC = mean(f1pC);
+ af2pC = mean(f2pC);
+ af3pC = mean(f3pC);
+
+% Desviación estándar y error estándar
+%Diabetes
+ erD = sqrt(5); %numero de datos
+ st0D = std(f0pD);
+ err0D = st0D/erD;
+ st1D = std(f1pD);
+ err1D = st1D/erD;
+ st2D = std(f2pD);
+ err2D = st2D/erD;
+ st3D = std(f3pD);
+ err3D = st3D/erD;
+%Hijos diabetes
+ erHD = sqrt(5); %numero de datos
+ st0HD = std(f0pHD);
+ err0HD = st0HD/erHD;
+ st1HD = std(f1pHD);
+ err1HD = st1HD/erHD;
+ st2HD = std(f2pHD);
+ err2HD = st2HD/erHD;
+ st3HD = std(f3pHD);
+ err3HD = st3HD/erHD;
+%Prediabetes
+ erPD = sqrt(2); %numero de datos
+ st0PD = std(f0pPD);
+ err0PD = st0PD/erPD;
+ st1PD = std(f1pPD);
+ err1PD = st1PD/erPD;
+ st2PD = std(f2pPD);
+ err2PD = st2PD/erPD;
+ st3PD = std(f3pPD);
+ err3PD = st3PD/erPD;
+%Control
+ erC = sqrt(4); %numero de datos
+ st0C = std(f0pC);
+ err0C = st0C/erC;
+ st1C = std(f1pC);
+ err1C = st1C/erC;
+ st2C = std(f2pC);
+ err2C = st2C/erC;
+ st3C = std(f3pC);
+ err3C = st3C/erC;
+
+% 
+ X = [0.1 0.2 0.3 1];
+ %Diabetes
+ YD = [af0pD af1pD af2pD af3pD];
+ errD = [err0D err1D err2D err3D];
+ xD = transpose(X);
+ yD = transpose(YD);
+ ftD = fit(xD,yD,'logistic4')
+ %Hijos diabetes
+ YHD = [af0pHD af1pHD af2pHD af3pHD];
+ errHD = [err0HD err1HD err2HD err3HD];
+ xHD = transpose(X);
+ yHD = transpose(YHD);
+ ftHD = fit(xHD,yHD,'logistic4')
+ %Prediabetes
+ YPD = [af0pPD af1pPD af2pPD af3pPD];
+ errPD = [err0PD err1PD err2PD err3PD];
+ xPD = transpose(X);
+ yPD = transpose(YPD);
+ ftPD = fit(xPD,yPD,'logistic4')
+ %Control
+ YC = [af0pC af1pC af2pC af3pC];
+ errC = [err0C err1C err2C err3C]
+ xC = transpose(X);
+ yC = transpose(YC);
+ ftC = fit(xC,yC,'logistic4')
+
+ Diabetes = scatter(X,YD,100,'r',"filled") %DIABETES
+ hold on
+ ajusteD = plot(ftD,xD,yD)
+ set(ajusteD,'color','r','LineWidth',1.2)
+ errorbar(xD,yD,errD,'color',"r","LineStyle","none")
+ Hijos = scatter(X,YHD,100,'b',"filled") %HIJOS DIABETES
+ hold on
+ ajusteHD = plot(ftHD,xHD,yHD)
+ set(ajusteHD,'color','b','LineWidth',1.2)
+ errorbar(xHD,yHD,errHD,'color',"b","LineStyle","none")
+ Prediabetes = scatter(X,YPD,100,[0.8500 0.3250 0.0980],"filled") %PREDIABETES
+ hold on
+ ajustePD = plot(ftPD,xPD,yPD)
+ set(ajustePD,'color',[0.8500 0.3250 0.0980],'LineWidth',1.2)
+ errorbar(xPD,yPD,errPD,'color',"#D95319","LineStyle","none")
+ Control = scatter(X,YC,100,'k',"filled") %CONTROL
+ hold on
+ ajusteC = plot(ftC,xC,yC)
+ set(ajusteC,'color','k','LineWidth',1.2)
+ errorbar(xC,yC,errC,'color',"k","LineStyle","none")
+
+ xlabel('Frecuencia de estimulación');
+ ylabel('% DDF del RH');
+ legend( [Diabetes(1), Hijos(1), Prediabetes(1), Control(1)], {'Diabetes (n=5)','Hijos de diabéticos (n=5)','Prediabetes (n=2)','Control (n=4)'},"Location",'best','FontSize',16);
+ title('Porcentaje de depresión en MSD');
+ set(gca,'FontSize',15,'FontName','Courier')
+ axis([0.1 1 -12 100]);
+
+%% Gráfica grupal MSI
+
+Cd; %diabetes
+Chd; %hijos diabetes
+Cc; %control
+
+kd = figure;
+
+%Transpuestas Diabetes
+ f0d = transpose(Cd(:,1));
+ f1d = transpose(Cd(:,2));
+ f2d = transpose(Cd(:,3));
+ f3d = transpose(Cd(:,4));
+%Transpuestas Hijos diabetes
+ f0hd = transpose(Chd(:,1));
+ f1hd = transpose(Chd(:,2));
+ f2hd = transpose(Chd(:,3));
+ f3hd = transpose(Chd(:,4));
+%Transpuestas Control
+ f0c = transpose(Cc(:,1));
+ f1c = transpose(Cc(:,2));
+ f2c = transpose(Cc(:,3));
+ f3c = transpose(Cc(:,4));
+% 
+% %Medianas porcentuales agrupadas por frecuencia
+%Diabetes
+ f0pD = (1-f0d)*100;
+ f1pD = (1-f1d)*100;
+ f2pD = (1-f2d)*100;
+ f3pD = (1-f3d)*100;
+%Hijos diabetes
+ f0pHD = (1-f0hd)*100;
+ f1pHD = (1-f1hd)*100;
+ f2pHD = (1-f2hd)*100;
+ f3pHD = (1-f3hd)*100;
+%Control
+ f0pC = (1-f0c)*100;
+ f1pC = (1-f1c)*100;
+ f2pC = (1-f2c)*100;
+ f3pC = (1-f3c)*100;
+% 
+% %Promedio de medianas porcentuales
+%Diabetes
+ af0pD = mean(f0pD);
+ af1pD = mean(f1pD);
+ af2pD = mean(f2pD);
+ af3pD = mean(f3pD);
+%Hijos diabetes
+ af0pHD = mean(f0pHD);
+ af1pHD = mean(f1pHD);
+ af2pHD = mean(f2pHD);
+ af3pHD = mean(f3pHD);
+%Control
+ af0pC = mean(f0pC);
+ af1pC = mean(f1pC);
+ af2pC = mean(f2pC);
+ af3pC = mean(f3pC);
+
+% Desviación estándar y error estándar
+%Diabetes
+ erD = sqrt(5); %numero de datos
+ st0D = std(f0pD);
+ err0D = st0D/erD;
+ st1D = std(f1pD);
+ err1D = st1D/erD;
+ st2D = std(f2pD);
+ err2D = st2D/erD;
+ st3D = std(f3pD);
+ err3D = st3D/erD;
+%Hijos diabetes
+ erHD = sqrt(7); %numero de datos
+ st0HD = std(f0pHD);
+ err0HD = st0HD/erHD;
+ st1HD = std(f1pHD);
+ err1HD = st1HD/erHD;
+ st2HD = std(f2pHD);
+ err2HD = st2HD/erHD;
+ st3HD = std(f3pHD);
+ err3HD = st3HD/erHD;
+%Control
+ erC = sqrt(5); %numero de datos
+ st0C = std(f0pC);
+ err0C = st0C/erC;
+ st1C = std(f1pC);
+ err1C = st1C/erC;
+ st2C = std(f2pC);
+ err2C = st2C/erC;
+ st3C = std(f3pC);
+ err3C = st3C/erC;
+
+% 
+ X = [0.1 0.2 0.3 1];
+ %Diabetes
+ YD = [af0pD af1pD af2pD af3pD];
+ errD = [err0D err1D err2D err3D];
+ xD = transpose(X);
+ yD = transpose(YD);
+ ftD = fit(xD,yD,'logistic4')
+ %Hijos diabetes
+ YHD = [af0pHD af1pHD af2pHD af3pHD];
+ errHD = [err0HD err1HD err2HD err3HD];
+ xHD = transpose(X);
+ yHD = transpose(YHD);
+ ftHD = fit(xHD,yHD,'logistic4')
+ %Control
+ YC = [af0pC af1pC af2pC af3pC];
+ errC = [err0C err1C err2C err3C]
+ xC = transpose(X);
+ yC = transpose(YC);
+ ftC = fit(xC,yC,'logistic4')
+
+ Diabetes = scatter(X,YD,100,'r',"filled") %DIABETES
+ hold on
+ ajusteD = plot(ftD,xD,yD)
+ set(ajusteD,'color','r','LineWidth',1.2)
+ errorbar(xD,yD,errD,'color',"r","LineStyle","none")
+ Hijos = scatter(X,YHD,100,'b',"filled") %HIJOS DIABETES
+ hold on
+ ajusteHD = plot(ftHD,xHD,yHD)
+ set(ajusteHD,'color','b','LineWidth',1.2)
+ errorbar(xHD,yHD,errHD,'color',"b","LineStyle","none")
+ Control = scatter(X,YC,100,'k',"filled") %CONTROL
+ hold on
+ ajusteC = plot(ftC,xC,yC)
+ set(ajusteC,'color','k','LineWidth',1.2)
+ errorbar(xC,yC,errC,'color',"k","LineStyle","none")
+
+ xlabel('Frecuencia de estimulación');
+ ylabel('% DDF del RH');
+ legend( [Diabetes(1), Hijos(1), Control(1)], {'Diabetes (n=5)','Hijos de diabéticos (n=7)','Control (n=5)'},"Location",'best','FontSize',16);
+ title('Porcentaje de depresión en MSI');
+ set(gca,'FontSize',15,'FontName','Courier')
+ axis([0.1 1 -12 100]);
