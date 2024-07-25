@@ -1,0 +1,20 @@
+%% Obtenemos los R0s de los 3 trenes
+function [mr0i,mr0d] = R0s(A,B,C,D,E,F)
+ 
+% MSI
+    a = A(:,1);
+    b = B(:,1);
+    c = C(:,1);
+    R0SI = [a;b;c];
+    mi = median(R0SI);
+    R0SIn = R0SI./mi;
+    mr0i = median(R0SIn(2:9));
+% MSD
+    d = D(:,1);
+    e = E(:,1);
+    ff = F(:,1);
+    R0SD = [d;e;ff];
+    md = median(R0SD);
+    R0SDn = R0SD./md;
+    mr0d = median(R0SDn(2:9));
+end
