@@ -1,0 +1,111 @@
+%% Hreflex_fastplot
+iniPath = uigetdir('%USERPROFILE%/Escritorio/');
+f = waitbar(0,'Cargando archivos...');
+
+%% Frecuencias en miembros superiores: 0.2, 0.3 y 1 Hz 
+% MSD
+% Curva I/O
+PathName = [iniPath,'/SUP-DER/CURVA/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SD.curva.corriente, s.SD.curva.M,s.SD.curva.H,s.SD.curva.latM,s.SD.curva.latH] = curvaHreflex(FileName,PathName,300);
+end
+waitbar(0.30,f);
+
+% DDF 0.2 Hz
+PathName = [iniPath,'/SUP-DER/0.2HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SD.F200mHz.corriente, s.SD.F200mHz.M,s.SD.F200mHz.H,s.SD.F200mHz.latM,s.SD.F200mHz.latH] = ddfHreflex(FileName,PathName,300);
+end
+waitbar(0.35,f);
+
+% DDF 0.3 Hz
+PathName = [iniPath,'/SUP-DER/0.3HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SD.F300mHz.corriente, s.SD.F300mHz.M,s.SD.F300mHz.H,s.SD.F300mHz.latM,s.SD.F300mHz.latH] = ddfHreflex(FileName,PathName,300);
+end
+waitbar(0.40,f);
+
+% DDF 1 Hz
+PathName = [iniPath,'/SUP-DER/1HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SD.F1Hz.corriente, s.SD.F1Hz.M,s.SD.F1Hz.H,s.SD.F1Hz.latM,s.SD.F1Hz.latH] = ddfHreflex(FileName,PathName,300);        
+end
+waitbar(0.45,f);
+
+%% %% Promedio de los trenes
+% MSD
+D = s.SD.F200mHz.H;
+E = s.SD.F300mHz.H;
+F = s.SD.F1Hz.H;
+ds2 = mean(D);
+ds3 = mean(E);
+ds5 = mean(F);
+
+%% Normalización y arrays con medianas
+% MSD
+ds2norm = ds2/ds2(1);
+ds3norm = ds3/ds3(1);
+ds5norm = ds5/ds5(1);
+mds2 = median(ds2norm(2:10));
+mds3 = median(ds3norm(2:10));
+mds5 = median(ds5norm(2:10));
+MSD = [mds2 mds3 mds5];
+
+%% R0s
+[mr0] = R0sMSD(D,E,F)
+MSD0 = [mr0 mds2 mds3 mds5]
+%% Grafica resultados
+h = figure;
+
+plot(1:10,ds2norm,'-oc',1:10,ds3norm,'-om',1:10,ds5norm,'-or','LineWidth',1.5);
+hold on;
+yline(mds2,'--c');
+yline(mds3,'--m');
+yline(mds5,'--r');
+title('Miembro superior derecho');
+set(gca,'FontSize',15,'FontName','Courier')
+legend({'0.2 Hz','0.3 Hz','1 Hz'});
+xlabel('N.° pulso');
+ylabel('ABC del RH normalizado');
+axis([0.5 10.5 0 1.6]);
+
+
+maxFigure(h);
+h.Children(1).Position = [0.4869 0.4656 0.0561 0.0928];
+close(f);
+
+%% Gráfica de %DDF
+j = figure;
+
+%MSD
+mpr0 = (1-mr0)*100;
+mpds2 = (1-mds2)*100;
+mpds3 = (1-mds3)*100;
+mpds5 = (1-mds5)*100;
+% Ajuste
+X = transpose([0.1,0.2,0.3,1]); 
+Y = transpose([mpr0,mpds2,mpds3,mpds5]);
+[ft,gof] = fit(X,Y,'logistic4')
+% Plot
+scatter(0.1,mpr0,150,'k','filled')
+hold on
+scatter(0.2,mpds2,150,"c","filled")
+scatter(0.3,mpds3,150,"m","filled")
+scatter(1,mpds5,150,"r","filled")
+ajuste = plot(ft,X,Y)
+set(ajuste,'LineWidth',1.5)
+
+xlabel('Frecuencia de estimulación');
+ylabel('% DDF del RH');
+legend({'0.1 Hz','0.2 Hz','0.3 Hz','1 Hz'});
+title('Porcentaje de depresión en miembro superior derecho');
+set(gca,'FontSize',15,'FontName','Courier')
+axis([0.1 1 -10 100]);
