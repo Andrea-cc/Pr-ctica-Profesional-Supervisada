@@ -64,7 +64,7 @@ MSD = [mds2 mds3 mds5];
 
 %% R0s
 [mr0] = R0sMSD(D,E,F)
-MSD0 = [mr0 mds2 mds3 mds5]
+MSD = [mr0 mds2 mds3 mds5]
 %% Grafica resultados
 h = figure;
 
