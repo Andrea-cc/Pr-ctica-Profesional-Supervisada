@@ -1,0 +1,211 @@
+%% Hreflex_fastplot
+iniPath = uigetdir('%USERPROFILE%/Escritorio/');
+f = waitbar(0,'Cargando archivos...');
+
+%% Frecuencias en miembros superiores: 0.2, 0.3 y 1 Hz
+%% MSI
+% Curva I/O
+PathName = [iniPath,'/SUP-IZQ/CURVA/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SI.curva.corriente, s.SI.curva.M,s.SI.curva.H,s.SI.curva.latM,s.SI.curva.latH] = curvaHreflex(FileName,PathName,300);
+end
+waitbar(0.05,f);
+
+% DDF 0.2 Hz
+PathName = [iniPath,'/SUP-IZQ/0.2HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SI.F200mHz.corriente, s.SI.F200mHz.M,s.SI.F200mHz.H,s.SI.F200mHz.latM,s.SI.F200mHz.latH] = ddfHreflex(FileName,PathName,300);
+end
+waitbar(0.10,f);
+
+% DDF 0.3 Hz
+PathName = [iniPath,'/SUP-IZQ/0.3HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SI.F300mHz.corriente, s.SI.F300mHz.M,s.SI.F300mHz.H,s.SI.F300mHz.latM,s.SI.F300mHz.latH] = ddfHreflex(FileName,PathName,300);
+end
+waitbar(0.15,f);
+
+% DDF 1 Hz
+PathName = [iniPath,'/SUP-IZQ/1HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SI.F1Hz.corriente, s.SI.F1Hz.M,s.SI.F1Hz.H,s.SI.F1Hz.latM,s.SI.F1Hz.latH] = ddfHreflex(FileName,PathName,300);      
+end
+waitbar(0.20,f);
+
+%% MSD
+% Curva I/O
+PathName = [iniPath,'/SUP-DER/CURVA/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SD.curva.corriente, s.SD.curva.M,s.SD.curva.H,s.SD.curva.latM,s.SD.curva.latH] = curvaHreflex(FileName,PathName,300);
+end
+waitbar(0.30,f);
+
+% DDF 0.2 Hz
+PathName = [iniPath,'/SUP-DER/0.2HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SD.F200mHz.corriente, s.SD.F200mHz.M,s.SD.F200mHz.H,s.SD.F200mHz.latM,s.SD.F200mHz.latH] = ddfHreflex(FileName,PathName,300);
+end
+waitbar(0.35,f);
+
+% DDF 0.3 Hz
+PathName = [iniPath,'/SUP-DER/0.3HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SD.F300mHz.corriente, s.SD.F300mHz.M,s.SD.F300mHz.H,s.SD.F300mHz.latM,s.SD.F300mHz.latH] = ddfHreflex(FileName,PathName,300);
+end
+waitbar(0.40,f);
+
+% DDF 1 Hz
+PathName = [iniPath,'/SUP-DER/1HZ/'];
+a = dir(PathName);
+if size(a,1) > 2
+    FileName = a(3).name;
+    [s.SD.F1Hz.corriente, s.SD.F1Hz.M,s.SD.F1Hz.H,s.SD.F1Hz.latM,s.SD.F1Hz.latH] = ddfHreflex(FileName,PathName,300);        
+end
+
+%% Promedio de los trenes
+% MSI
+A = s.SI.F200mHz.H
+B = s.SI.F300mHz.H
+C = s.SI.F1Hz.H;
+is2 = mean(A);
+is3 = mean(B);
+is5 = mean(C);
+% MSD
+D = s.SD.F200mHz.H;
+E = s.SD.F300mHz.H;
+F = s.SD.F1Hz.H;
+ds2 = mean(D);
+ds3 = mean(E);
+ds5 = mean(F);
+%% Normalización y arrays con medianas
+% MSI
+is2norm = is2/is2(1);
+is3norm = is3/is3(1);
+is5norm = is5/is5(1);
+mis2 = median(is2norm(2:10));
+mis3 = median(is3norm(2:10));
+mis5 = median(is5norm(2:10));
+MSI = [mis2 mis3 mis5]
+
+% MSD
+ds2norm = ds2/ds2(1);
+ds3norm = ds3/ds3(1);
+ds5norm = ds5/ds5(1);
+mds2 = median(ds2norm(2:10));
+mds3 = median(ds3norm(2:10));
+mds5 = median(ds5norm(2:10));
+MSD = [mds2 mds3 mds5]
+
+%% R0s
+[mr0i,mr0d] = R0s(A,B,C,D,E,F) 
+%% Grafica resultados
+h = figure;
+subplot(2,1,1);
+try
+
+    plot(1:10,is2norm,'-oc',1:10,is3norm,'-om',1:10,is5norm,'-or','LineWidth',1.5);
+    hold on;
+    yline(mis2,'--c');
+    yline(mis3,'--m');
+    yline(mis5,'--r');
+catch
+end
+legend({'0.2 Hz','0.3 Hz','1 Hz'});
+title('Miembro superior izquierdo');
+set(gca,'FontSize',15,'FontName','Courier')
+xlabel('N.° pulso');
+ylabel('ABC del RH normalizado');
+axis([0.5 10.5 0 1.6]);
+
+
+subplot(2,1,2);
+try
+
+    plot(1:10,ds2norm,'-oc',1:10,ds3norm,'-om',1:10,ds5norm,'-or','LineWidth',1.5);
+    hold on;
+    yline(mds2,'--c');
+    yline(mds3,'--m');
+    yline(mds5,'--r');
+catch
+end
+title('Miembro superior derecho');
+set(gca,'FontSize',15,'FontName','Courier')
+xlabel('N.° pulso');
+ylabel('ABC del RH normalizado');
+axis([0.5 10.5 0 1.6]);
+
+maxFigure(h);
+h.Children(2).Position = [0.4869 0.4656 0.0561 0.0928];
+close(f);
+
+%% Gráfica de %DDF
+j = figure;
+subplot(2,1,1);
+try 
+    %MSI
+    mpr0i = (1-mr0i)*100;
+    mpis2 = (1-mis2)*100;
+    mpis3 = (1-mis3)*100;
+    mpis5 = (1-mis5)*100;
+    X = transpose([0.1,0.2,0.3,1]);
+    Yi = transpose([mpr0i,mpis2,mpis3,mpis5]);
+    fti = fit(X,Yi,'logistic4')
+    % Plot
+    scatter(0.1,mpr0i,150,'k','filled')
+    hold on
+    scatter(0.2,mpis2,150,"c","filled")
+    scatter(0.3,mpis3,150,"m","filled")
+    scatter(1,mpis5,150,"r","filled")
+    ajuste = plot(fti,X,Yi)
+    set(ajuste,'LineWidth',1.5)
+
+catch
+end
+xlabel('Frecuencia de estimulación');
+ylabel('% DDF del RH');
+set(gca,'FontSize',15,'FontName','Courier')
+legend({'0.1 Hz','0.2 Hz','0.3 Hz','1 Hz'});
+title('Porcentaje de depresión en miembro superior izquierdo');
+axis([0.1 1 -10 100]);
+
+subplot(2,1,2);
+try
+    %MSD
+    mpr0d = (1-mr0d)*100;
+    mpds2 = (1-mds2)*100;
+    mpds3 = (1-mds3)*100;
+    mpds5 = (1-mds5)*100;
+    % Ajuste
+    X = transpose([0.1,0.2,0.3,1]); 
+    Yd = transpose([mpr0d,mpds2,mpds3,mpds5]);
+    ftd = fit(X,Yd,'logistic4')
+    % Plot
+    scatter(0.1,mpr0d,150,'k','filled')
+    hold on
+    scatter(0.2,mpds2,150,"c","filled")
+    scatter(0.3,mpds3,150,"m","filled")
+    scatter(1,mpds5,150,"r","filled")
+    ajuste = plot(ftd,X,Yd)
+    set(ajuste,'LineWidth',1.5)
+
+catch
+end
+xlabel('Frecuencia de estimulación');
+ylabel('% DDF del RH');
+set(gca,'FontSize',15,'FontName','Courier')
+title('Porcentaje de depresión en miembro superior derecho');
+axis([0.1 1 -20 100]);
