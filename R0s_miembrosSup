@@ -1,3 +1,5 @@
+% Este script es para obtener el primer punto, que corresponde a la mediana del ABC del RH en la frecuencia de 0.1 Hz (para ambos miembros superiores)
+
 %% Obtenemos los R0s de los 3 trenes
 function [mr0i,mr0d] = R0s(A,B,C,D,E,F)
  
