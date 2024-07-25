@@ -1,3 +1,6 @@
+% Con este código obtenemos un array MSD con las medianas del ABC del RH en cada frecuencia (0.1, 0.2, 0.3 y 1 Hz) para miembro superior derecho
+% También obtenemos dos gráficas. La primera es ABC del RH contra número de pulso y la segunda es %DDF del RH contra frecuencia de estimulación con un ajuste sigmoide
+
 %% Hreflex_fastplot
 iniPath = uigetdir('%USERPROFILE%/Escritorio/');
 f = waitbar(0,'Cargando archivos...');
